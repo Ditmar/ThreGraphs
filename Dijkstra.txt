@@ -1,0 +1,49 @@
+import java.util.*;
+
+public class Dijkstra {
+    public static void dijkstra(Map<String, Map<String, Integer>> graph, String start) {
+        Map<String, Integer> distances = new HashMap<>();
+        for (String vertex : graph.keySet()) {
+            distances.put(vertex, Integer.MAX_VALUE);
+        }
+        distances.put(start, 0);
+        
+        PriorityQueue<Map.Entry<String, Integer>> priorityQueue = new PriorityQueue<>(Map.Entry.comparingByValue());
+        priorityQueue.add(new AbstractMap.SimpleEntry<>(start, 0));
+        
+        while (!priorityQueue.isEmpty()) {
+            Map.Entry<String, Integer> current = priorityQueue.poll();
+            String currentVertex = current.getKey();
+            int currentDistance = current.getValue();
+            
+            if (currentDistance > distances.get(currentVertex)) {
+                continue;
+            }
+            
+            Map<String, Integer> neighbors = graph.get(currentVertex);
+            for (Map.Entry<String, Integer> neighbor : neighbors.entrySet()) {
+                String neighborVertex = neighbor.getKey();
+                int weight = neighbor.getValue();
+                int distance = currentDistance + weight;
+                
+                if (distance < distances.get(neighborVertex)) {
+                    distances.put(neighborVertex, distance);
+                    priorityQueue.add(new AbstractMap.SimpleEntry<>(neighborVertex, distance));
+                }
+            }
+        }
+        
+        for (Map.Entry<String, Integer> entry : distances.entrySet()) {
+            System.out.println("Distance from " + start + " to " + entry.getKey() + " is " + entry.getValue());
+        }
+    }
+
+    public static void main(String[] args) {
+        Map<String, Map<String, Integer>> graph = new HashMap<>();
+        graph.put("A", Map.of("B", 1, "C", 4));
+        graph.put("B", Map.of("A", 1, "C", 2, "D", 5));
+        graph.put("C", Map.of("A", 4, "B", 2, "D", 1));
+        graph.put("D", Map.of("B", 5, "C", 1));    
+        dijkstra(graph, "A");
+    }
+}
